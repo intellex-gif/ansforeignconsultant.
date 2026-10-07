@@ -1,0 +1,31 @@
+const socialLinks={facebook:"https://www.facebook.com/",instagram:"https://www.instagram.com/",tiktok:"https://www.tiktok.com/",youtube:"https://www.youtube.com/",whatsapp:"https://wa.me/923238905040"};
+const savedTheme=localStorage.getItem("ans-theme");
+if(savedTheme==="dark")document.documentElement.classList.add("dark");
+document.addEventListener("DOMContentLoaded",()=>{
+ const theme=document.querySelector(".theme-toggle");
+ if(theme)theme.onclick=()=>{document.documentElement.classList.toggle("dark");localStorage.setItem("ans-theme",document.documentElement.classList.contains("dark")?"dark":"light")};
+ const page=document.body.dataset.page;
+ document.querySelectorAll("[data-nav]").forEach(a=>{if(a.dataset.nav===page)a.classList.add("active")});
+ const menu=document.querySelector(".menu"),links=document.querySelector(".links");
+ if(menu)menu.onclick=()=>links.classList.toggle("open");
+ document.querySelectorAll("[data-social]").forEach(a=>{let k=a.dataset.social;a.href=socialLinks[k];a.target="_blank";a.rel="noopener noreferrer"});
+ const y=document.querySelector("[data-year]");if(y)y.textContent=new Date().getFullYear();
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("visible")}),{threshold:.08});
+ document.querySelectorAll(".reveal").forEach(x=>io.observe(x));
+ const params=new URLSearchParams(location.search),sp=params.get("service"),cs=document.querySelector('#contactForm select[name="service"]');
+ if(cs&&sp)cs.value=sp;
+ const cf=document.querySelector("#contactForm");
+ if(cf)cf.onsubmit=e=>{e.preventDefault();let d=new FormData(cf),msg=`ANS Foreign Consultant Website Enquiry\nName: ${d.get("name")}\nPhone: ${d.get("phone")}\nEmail: ${d.get("email")}\nService: ${d.get("service")}\nMessage: ${d.get("message")}`;window.open("https://wa.me/923238905040?text="+encodeURIComponent(msg),"_blank");showToast("WhatsApp opened with your enquiry.");cf.reset()};
+ const af=document.querySelector("#assessmentForm");
+ if(af)af.onsubmit=e=>{e.preventDefault();let d=new FormData(af),s=0,age=+d.get("age");
+ if(age>=18&&age<=45)s+=2;else if(age<=55)s++;
+ if(["Bachelor's Degree","Master's Degree","PhD"].includes(d.get("education")))s+=2;else if(d.get("education")==="Intermediate / A-Levels")s++;
+ if(["Good","Strong"].includes(d.get("english")))s+=2;else if(d.get("english")==="Basic")s++;
+ if(d.get("experience")==="5+ years")s+=2;else if(d.get("experience")==="2–4 years")s++;
+ if(["Moderate","Strong"].includes(d.get("budget")))s+=2;else if(d.get("budget")==="Limited")s++;
+ if(d.get("passport")==="Yes")s++;
+ let t=s>=10?"Strong preliminary profile":s>=6?"Needs professional review":"More information is needed";
+ let m=s>=10?"Several positive indicators are present. ANS can review your documents and advise on a realistic route.":s>=6?"Your profile has positive indicators, but important factors need document-level review.":"Your answers do not currently provide enough positive indicators for a confident preliminary fit.";
+ const r=document.querySelector("#assessmentResult");r.innerHTML=`<strong>${t}</strong><span>${m}</span><small>Preliminary screening only — not an official eligibility decision or approval guarantee.</small>`;r.classList.add("show")};
+});
+function showToast(t){let x=document.querySelector("#toast");if(!x)return;x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),3000)}
